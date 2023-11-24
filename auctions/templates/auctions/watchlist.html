@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h1>watch list</h1>
+    {% if item %}
+        {% for list in item %}
+            <h1>{{ list.item.title }}</h1>
+            <a href="{% url 'listing_detail' list.item.id %}"><img src="{{ list.item.img }}" alt="{{ list.item.title}}" width="300px" height="200px"></a>
+            <p>starting bid: ${{ list.item.starting_bid }}</p>
+            <p>{{ list.item.description }}</p>
+        {% endfor %}
+    {% else %}
+        <h3>you have no item to watch</h3>
+    {% endif %}
+{% endblock %}

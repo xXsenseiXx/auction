@@ -1,0 +1,77 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="listing_item_grid">
+        <h3 class="listing_title">Listing: {{ listing.title }}</h3>
+        <img src="{{ listing.img }}" alt="{{ listing.title}}" width="300px" height="200px">
+        <div class="listing_detail_grid">
+            <h3>Details:</h3>
+            <p>{{ listing.description }}</p>
+        
+            {% if highest_bid > listing.starting_bid %}
+                <p>highest bid: ${{ highest_bid }}</p>
+            {% else %}
+                <p>no bids: ${{ listing.starting_bid }}</p>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+                {% if  watchlist %}
+                    <form action="{% url 'listing_detail' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="remove from watchlist" name="remove_watch">
+                    </form>
+                {% else %}
+                    <form action="{% url 'listing_detail' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Add to watchlist" name="add_watch">
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    <div class="bidding_grid">
+        <p>{{ total_bids }} bid(s) so far</p>
+        {% if request.user.is_authenticated %}
+            {% if listing.stat == 'active' %}
+                <form action="{% url 'listing_detail' listing.id %}" method="post"> 
+                    {% csrf_token %}
+                    {% if highest_bid > listing.starting_bid %}
+                        <input type="number" value="Bid" min="{{ highest_bid }}" name="bid_placed">
+                    {% else %}
+                        <input type="number" value="Bid" min="{{ listing.starting_bid }}" name="bid_placed">
+                    {% endif %}    
+                    <input type="submit" value="Place Bid" >
+                </form>
+    </div>
+            {% else %}
+                    {% if user.username != winner %}
+                        <h3>auction closed and the highest bidder is {{ winner }}</h3>
+                    {% else %}
+                        <h3>congrats {{ winner }} you have won this action: {{listing.title}}</h3>
+                    {% endif %}
+            {% endif %}
+            {% if listing.user == request.user %}
+                {% if listing.stat == 'active' %}
+                    <form class="close_auction_grid" action="{% url 'listing_detail' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Close Auction" name="close_auction">
+                    </form>
+                {% endif %}
+            {% endif %}
+            <form class="comments_grid" action="{% url 'listing_detail' listing.id %}" method="post">
+                {% csrf_token %}
+                <textarea name="comment" placeholder="Add your comment"></textarea>
+                <input type="submit" value="Comment">
+            </form>
+        {% else %}
+                <h3>you have to be logged in so you cann access bidding</h3>
+                <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+        <div class="comments">
+            <h3>Comments: </h3>
+            {% for comment in  comments %}
+                <ul>
+                    <li>{{ comment.user}}: {{ comment.comment }}</li>
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

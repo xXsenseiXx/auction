@@ -1,0 +1,32 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+        <form action="{% url 'list_item' %}" method="post">
+            {% csrf_token %}
+            <div class="list_item_inputs">
+                <div class="inputs_grid">
+                    <input type="hidden" name="user" value="{{ user }}">
+                    <input type="text" name="Title" placeholder="title">
+                    <br>
+                    <input type="url" name="img" placeholder="enter the image url">
+                    <br>
+                    <input type="number" name="bid" placeholder="set your starting bid">
+                    <br>
+                    <textarea name="description" placeholder="description"></textarea>
+                    <br>
+                    <select name="selected_category">
+                        {% for item in category %}
+                            <option value="{{ item.name }}">{{ item.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                </div>
+            </div>
+            <br>
+            <input class="list_item_button" type="submit">
+        </form>
+    {% else %}
+        <h1>you need to be logged in an account to be able to list items!</h1>
+    {% endif %}
+{% endblock %}

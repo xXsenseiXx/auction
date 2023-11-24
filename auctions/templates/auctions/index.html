@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h1 class="index_grid_title">Active Listings</h1>
+    <div class="index_flex">
+        {% for listing in listings %}
+            {% if listing.stat == 'active' %}
+                <div class="index_grid"> 
+                    <div class="galery">
+                        <a href="{% url 'listing_detail' listing.id %}">
+                            <img src="{{ listing.img }}" alt="{{ listing.title}}" >
+                            <p>{{ listing.title }}</p>
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
